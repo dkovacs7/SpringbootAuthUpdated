@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -25,7 +24,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private AuthenticationManager authenticationManager;
 
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
+    JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
 
@@ -46,16 +45,14 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
 
         String token = JWT.create()
                 .withSubject(((User)authResult.getPrincipal()).getUsername())
                 .withExpiresAt(  new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .sign( HMAC512( SECRET.getBytes()));
+                .sign(HMAC512( SECRET.getBytes()));
 
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
-
-
     }
+
 }
